@@ -89,7 +89,59 @@ window.addEventListener('DOMContentLoaded' , () => {
     }
 
     setTime(deadline, '.timer');
+ 
+    // modal
 
+    const modal = document.querySelector('.modal');
+    const openButtons = document.querySelectorAll('[data-modal]');
+    const closeButton = document.querySelector('[data-close]');
+
+    openButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            showModal();
+        });
+    });
+
+    closeButton.addEventListener('click', () => {
+        hideModal();
+    });
+
+    function showModal() {
+        modal.classList.add('show');
+        modal.classList.remove('hide');
+        document.body.style.overflow = 'hidden';
+        clearTimeout(timeOut);
+    }
+
+    function hideModal() {
+        modal.classList.remove('show');
+        modal.classList.add('hide');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.code == 'Escape' && modal.classList.contains('show')) {
+            hideModal();
+        }
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            hideModal();
+        }
+    });
+
+    const timeOut = setTimeout(showModal, 5000);
+
+    window.addEventListener('scroll', showModalByScroll);
+
+    function showModalByScroll() {
+        if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+            showModal();
+            window.removeEventListener('scroll', showModalByScroll);
+
+        }
+    }
     
 
 });
