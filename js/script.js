@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded' , () => {
 
     // timer
 
-    const deadline = new Date('2021-08-28');
+    const deadline = new Date('2021-08-29');
     
     function getTime(endtime) {
         const time = Date.parse(endtime) - Date.parse(new Date()); 
@@ -110,7 +110,7 @@ window.addEventListener('DOMContentLoaded' , () => {
         modal.classList.add('show');
         modal.classList.remove('hide');
         document.body.style.overflow = 'hidden';
-        clearTimeout(timeOut);
+        //clearTimeout(timeOut);
     }
 
     function hideModal() {
@@ -131,7 +131,7 @@ window.addEventListener('DOMContentLoaded' , () => {
         }
     });
 
-    const timeOut = setTimeout(showModal, 5000);
+    //const timeOut = setTimeout(showModal, 5000);
 
     window.addEventListener('scroll', showModalByScroll);
 
@@ -210,5 +210,56 @@ window.addEventListener('DOMContentLoaded' , () => {
         22,
         '.menu .container',
     ).structureOfCard();
+
+    // formsWithRequests
+
+    const message = {
+        loading: 'Загрузка...',
+        success: 'Информация принята',
+        failture: 'Что-то пошло не так...'
+    };
+
+    const inputForms = document.querySelectorAll('form');
+
+    inputForms.forEach(item => {
+        sendData(item);
+    });
+
+    function sendData(form) {
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const messageText = document.createElement('div');
+            messageText.innerText = message.loading;
+            form.append(messageText);
+
+            const request = new XMLHttpRequest();
+            request.open('POST', 'server.php');
+            request.setRequestHeader('Content-type', 'application/json');
+
+            const formData = new FormData(form);
+            const data = {};
+
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            const json = JSON.stringify(data);
+
+            //request.send(formData);
+            request.send(json);
+
+            request.addEventListener('load', () => {
+                if (request.status === 200) {
+                    console.log(request.response);
+                    messageText.innerText = message.success;
+                } else {
+                    messageText.innerText = message.failture;
+                }
+            });
+        });
+
+    }
 
 });
