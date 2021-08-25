@@ -121,7 +121,7 @@ window.addEventListener('DOMContentLoaded' , () => {
     });
 
     modal.addEventListener('click', (e) => {
-        if (e.target === modal || e.target.getAttribute('data-close') == '') { // если текущий элемент подложка или тот, что содержит атрибут data-close - закрываем
+        if (e.target === modal || e.target.getAttribute('data-close') == '') {
             hideModal();
         }
     });
@@ -225,13 +225,13 @@ window.addEventListener('DOMContentLoaded' , () => {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const messageText = document.createElement('img');
-            messageText.src = message.loading;
-            messageText.style.cssText = `
+            const spinner = document.createElement('img');
+            spinner.src = message.loading;
+            spinner.style = `
                 display: block;
-                margin: 0 auto; 
+                margin: 0 auto;
             `;
-            form.insertAdjacentElement('afterend', messageText); // позволяет помещать элементы в разные места верстки
+            form.insertAdjacentElement('afterend', spinner);
 
             const request = new XMLHttpRequest();
             request.open('POST', 'server.php');
@@ -251,42 +251,40 @@ window.addEventListener('DOMContentLoaded' , () => {
 
             request.addEventListener('load', () => {
                 if (request.status === 200) {
-                    console.log(request.response);
-                    showThanksModal(message.success);
                     form.reset();
-                    messageText.remove(); // удалить спиннер после того как событие сработает
+                    spinner.remove();
+                    addThanksModal(message.success);
+                    console.log(request.response);
                 } else {
-                    showThanksModal(message.failture);
+                    addThanksModal(message.failture);
                 }
             });
         });
 
     }
 
-    function showThanksModal(message) {
-        const prevModalDialog = document.querySelector('.modal__dialog');
+    function addThanksModal(message) {
 
-        prevModalDialog.classList.add('hide');
-        
+        const prevModal = document.querySelector('.modal__dialog');
+        prevModal.classList.add('hide');
 
-        const thanksModal = document.createElement('div'); // блок обертка
-        thanksModal.classList.add('modal__dialog');
-        thanksModal.innerHTML = `
-            <div class = "modal__content">
-                <div class = "modal__close" data-close>&times</div>
-                <div class = "modal__title">${message}</div>
+        const newdModal = document.createElement('div');
+        newdModal.classList.add('modal__dialog');
+        newdModal.innerHTML = `
+            <div class="modal__content">
+                <div data-close class="modal__close">&times;</div>
+                <div class="modal__title">${message}</div>
             </div>
         `;
-
-        modal.append(thanksModal);
+        modal.append(newdModal);
         showModal();
         
         setTimeout(() => {
-            thanksModal.remove();
-            prevModalDialog.classList.add('show'); // показ предыдущего контекта
-            prevModalDialog.classList.remove('hide');
+            newdModal.remove();
+            prevModal.classList.add('show');
+            prevModal.classList.remove('hide');
             hideModal();
-        }, 4000);
+        }, 3000);
     }
 
 });
