@@ -94,16 +94,11 @@ window.addEventListener('DOMContentLoaded' , () => {
 
     const modal = document.querySelector('.modal');
     const openButtons = document.querySelectorAll('[data-modal]');
-    const closeButton = document.querySelector('[data-close]');
 
     openButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             showModal();
         });
-    });
-
-    closeButton.addEventListener('click', () => {
-        hideModal();
     });
 
     function showModal() {
@@ -126,12 +121,12 @@ window.addEventListener('DOMContentLoaded' , () => {
     });
 
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
+        if (e.target === modal || e.target.getAttribute('data-close') == '') { // если текущий элемент подложка или тот, что содержит атрибут data-close - закрываем
             hideModal();
         }
     });
 
-    //const timeOut = setTimeout(showModal, 5000);
+    const timeOut = setTimeout(showModal, 50000);
 
     window.addEventListener('scroll', showModalByScroll);
 
@@ -214,7 +209,7 @@ window.addEventListener('DOMContentLoaded' , () => {
     // formsWithRequests
 
     const message = {
-        loading: 'Загрузка...',
+        loading: 'img/form/spinner.svg',
         success: 'Информация принята',
         failture: 'Что-то пошло не так...'
     };
@@ -230,9 +225,13 @@ window.addEventListener('DOMContentLoaded' , () => {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const messageText = document.createElement('div');
-            messageText.innerText = message.loading;
-            form.append(messageText);
+            const messageText = document.createElement('img');
+            messageText.src = message.loading;
+            messageText.style.cssText = `
+                display: block;
+                margin: 0 auto; 
+            `;
+            form.insertAdjacentElement('afterend', messageText); // позволяет помещать элементы в разные места верстки
 
             const request = new XMLHttpRequest();
             request.open('POST', 'server.php');
@@ -253,13 +252,41 @@ window.addEventListener('DOMContentLoaded' , () => {
             request.addEventListener('load', () => {
                 if (request.status === 200) {
                     console.log(request.response);
-                    messageText.innerText = message.success;
+                    showThanksModal(message.success);
+                    form.reset();
+                    messageText.remove(); // удалить спиннер после того как событие сработает
                 } else {
-                    messageText.innerText = message.failture;
+                    showThanksModal(message.failture);
                 }
             });
         });
 
+    }
+
+    function showThanksModal(message) {
+        const prevModalDialog = document.querySelector('.modal__dialog');
+
+        prevModalDialog.classList.add('hide');
+        
+
+        const thanksModal = document.createElement('div'); // блок обертка
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.innerHTML = `
+            <div class = "modal__content">
+                <div class = "modal__close" data-close>&times</div>
+                <div class = "modal__title">${message}</div>
+            </div>
+        `;
+
+        modal.append(thanksModal);
+        showModal();
+        
+        setTimeout(() => {
+            thanksModal.remove();
+            prevModalDialog.classList.add('show'); // показ предыдущего контекта
+            prevModalDialog.classList.remove('hide');
+            hideModal();
+        }, 4000);
     }
 
 });
