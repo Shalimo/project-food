@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded' , () => {
 
     // timer
 
-    const deadline = new Date('2021-08-29');
+    const deadline = new Date('2021-08-31');
     
     function getTime(endtime) {
         const time = Date.parse(endtime) - Date.parse(new Date()); 
@@ -141,8 +141,9 @@ window.addEventListener('DOMContentLoaded' , () => {
      //clases
 
      class MenuCard {
-        constructor(src, title, descr, price, parent, ...classes) {
+        constructor(src, alt, title, descr, price, parent, ...classes) {
             this.src = src;
+            this.alt = alt;
             this.title = title;
             this.descr = descr;
             this.price = price;
@@ -169,7 +170,7 @@ window.addEventListener('DOMContentLoaded' , () => {
             }
 
             element.innerHTML = `
-                            <img src=${this.src} alt="vegy">
+                            <img src=${this.src} alt=${this.alt}>
                             <h3 class="menu__item-subtitle">${this.title}</h3>
                             <div class="menu__item-descr">${this.descr}</div>
                             <div class="menu__item-divider"></div>
@@ -182,29 +183,39 @@ window.addEventListener('DOMContentLoaded' , () => {
         }
     }
 
-    new MenuCard(
-        'img/tabs/elite.jpg',
-        'Меню “Премиум”',
-        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        22,
-        '.menu .container'
-    ).structureOfCard();
+    const getData = async (url) => {
+        const result = await fetch(url);
 
-    new MenuCard(
-        'img/tabs/elite.jpg',
-        'Меню “Премиум”',
-        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        22,
-        '.menu .container',
-    ).structureOfCard();
+        return await result.json();
+    };
 
-    new MenuCard(
-        'img/tabs/elite.jpg',
-        'Меню “Премиум”',
-        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        22,
-        '.menu .container',
-    ).structureOfCard();
+    getData('http://localhost:3000/menu')
+        .then(data => {
+            data.forEach(({img, altimg, title, descr, price}) => {
+                new MenuCard(img, altimg, title, descr, price, '.menu .container').structureOfCard();
+            });
+        });
+
+        // second option
+    // getData('http://localhost:3000/menu')
+    //     .then(data => {
+    //         data.forEach(({img, altimg, title, descr, price}) => {
+    //             const element = document.createElement('div');
+    //             element.classList.add('menu__item');
+    //             element.innerHTML = `
+    //                 <img src=${img} alt=${altimg}>
+    //                 <h3 class="menu__item-subtitle">${title}</h3>
+    //                 <div class="menu__item-descr">${descr}</div>
+    //                 <div class="menu__item-divider"></div>
+    //                 <div class="menu__item-price">
+    //                     <div class="menu__item-cost">Цена:</div>
+    //                     <div class="menu__item-total"><span>${price}</span> грн/день</div>
+    //                 </div>    
+    //             `;
+
+    //             document.querySelector('.menu .container').append(element);
+    //         });
+    //     });
 
     // formsWithRequests
 
@@ -217,10 +228,20 @@ window.addEventListener('DOMContentLoaded' , () => {
     const inputForms = document.querySelectorAll('form');
 
     inputForms.forEach(item => {
-        sendData(item);
+        bindData(item);
     });
 
-    function sendData(form) {
+    const sendData = async (url, data) => {
+        const result = await fetch(url, {
+            method: 'POST',
+            headers: {'Content-type': 'application/json'},
+            body: data
+        });
+
+        return await result.json();
+    };
+
+    function bindData(form) {
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -234,17 +255,9 @@ window.addEventListener('DOMContentLoaded' , () => {
             form.insertAdjacentElement('afterend', spinner);
 
             const formData = new FormData(form);
-            const data = {};
-            formData.forEach((key, value) => {
-                data[key] = value;
-            });
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
-            fetch('server.php', {
-                method: 'POST',
-                headers: {'Content-type': 'application/json'},
-                body: JSON.stringify(data)
-            })
-            .then(data => data.text())
+            sendData('http://localhost:3000/requests', json)
             .then(data => {
                 spinner.remove();
                 addThanksModal(message.success);
@@ -258,7 +271,6 @@ window.addEventListener('DOMContentLoaded' , () => {
             });
 
         });
-
     }
 
     function addThanksModal(message) {
