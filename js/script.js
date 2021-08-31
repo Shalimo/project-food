@@ -37,7 +37,7 @@ window.addEventListener('DOMContentLoaded' , () => {
 
     // timer
 
-    const deadline = new Date('2021-08-31');
+    const deadline = new Date('2021-09-31');
     
     function getTime(endtime) {
         const time = Date.parse(endtime) - Date.parse(new Date()); 
@@ -296,4 +296,55 @@ window.addEventListener('DOMContentLoaded' , () => {
             hideModal();
         }, 3000);
     } 
+
+    // slider 1st 
+
+    const slides = document.querySelectorAll('.offer__slide');
+    const prev = document.querySelector('.offer__slider-prev');
+    const next = document.querySelector('.offer__slider-next');
+    const totalSlide = document.querySelector('#total');
+    const currentSlide = document.querySelector('#current'); 
+    let slideIndex = 1; // индекс слайда
+
+    showSlide();
+
+    if (slides.length < 10) {
+        totalSlide.innerHTML = `0${slides.length}`;
+    } else {
+        totalSlide.innerHTML = slides.length;
+    }
+
+    function showSlide(n) { 
+        if (n > slides.length) {
+            slideIndex = 1;
+        }
+
+        if (n < 1) {
+            slideIndex = slides.length;
+        }
+
+        slides.forEach(item => {
+            item.style.display = 'none';
+        });
+
+        slides[slideIndex -1].style.display = 'block'; // с помощью такой конструкции говорим, что отображение картинки исходит из индекса
+
+        if (slides.length < 10) {
+            currentSlide.innerHTML = `0${slideIndex}`;
+        } else {
+            currentSlide.innerHTML = slideIndex;
+        }
+    }
+
+    function plusSlides(n) {
+        showSlide(slideIndex += n);
+    }
+
+    prev.addEventListener('click', () => {
+        plusSlides(-1);
+    });
+
+    next.addEventListener('click', () => {
+        plusSlides(1);
+    });
 });
