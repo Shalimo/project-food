@@ -299,52 +299,128 @@ window.addEventListener('DOMContentLoaded' , () => {
 
     // slider 1st 
 
+    // const slides = document.querySelectorAll('.offer__slide');
+    // const prev = document.querySelector('.offer__slider-prev');
+    // const next = document.querySelector('.offer__slider-next');
+    // const totalSlide = document.querySelector('#total');
+    // const currentSlide = document.querySelector('#current'); 
+    // let slideIndex = 1; // индекс слайда
+
+    // showSlide(slideIndex);
+
+    // if (slides.length < 10) {
+    //     totalSlide.innerHTML = `0${slides.length}`;
+    // } else {
+    //     totalSlide.innerHTML = slides.length;
+    // }
+
+    // function showSlide(n) { 
+    //     if (n > slides.length) {
+    //         slideIndex = 1;
+    //     }
+
+    //     if (n < 1) {
+    //         slideIndex = slides.length;
+    //     }
+
+    //     slides.forEach(item => {
+    //         item.style.display = 'none';
+    //     });
+
+    //     slides[slideIndex -1].style.display = 'block'; // с помощью такой конструкции говорим, что отображение картинки исходит из индекса
+
+    //     if (slides.length < 10) {
+    //         currentSlide.innerHTML = `0${slideIndex}`;
+    //     } else {
+    //         currentSlide.innerHTML = slideIndex;
+    //     }
+    // }
+
+    // function plusSlides(n) {
+    //     showSlide(slideIndex += n);
+    // }
+
+    // prev.addEventListener('click', () => {
+    //     plusSlides(-1);
+    // });
+
+    // next.addEventListener('click', () => {
+    //     plusSlides(1);
+    // });
+
+    // slider 2nd
+
     const slides = document.querySelectorAll('.offer__slide');
     const prev = document.querySelector('.offer__slider-prev');
     const next = document.querySelector('.offer__slider-next');
     const totalSlide = document.querySelector('#total');
     const currentSlide = document.querySelector('#current'); 
-    let slideIndex = 1; // индекс слайда
+    const slidesWrapper = document.querySelector('.offer__slider-wrapper');
+    const slidesInner = document.querySelector('.offer__slider-inner');
+    const width = window.getComputedStyle(slidesWrapper).width; 
+    let slideIndex = 1; 
+    let offset = 0; 
 
-    showSlide();
-
+    // инициализация счетчика
     if (slides.length < 10) {
         totalSlide.innerHTML = `0${slides.length}`;
+        currentSlide.innerHTML = `0${slideIndex}`;
     } else {
         totalSlide.innerHTML = slides.length;
+        currentSlide.innerHTML = slideIndex;
     }
+    
+    slidesInner.style.width = 100 * slides.length +'%'; 
+    slidesInner.style.display = 'flex'; 
+    slidesInner.style.transition = '0.5s all';
+    slidesWrapper.style.overflow = 'hidden'; 
+    slides.forEach(slide => {
+        slide.style.width = width; 
+    });
 
-    function showSlide(n) { 
-        if (n > slides.length) {
+    next.addEventListener('click', () => {
+        if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) { 
+            offset = 0;
+        } else {
+            offset += +width.slice(0, width.length - 2); 
+        }
+        
+        slidesInner.style.transform = `translateX(-${offset}px)`; 
+
+        if (slideIndex == slides.length) {
             slideIndex = 1;
+        } else {
+            slideIndex++;
         }
-
-        if (n < 1) {
-            slideIndex = slides.length;
-        }
-
-        slides.forEach(item => {
-            item.style.display = 'none';
-        });
-
-        slides[slideIndex -1].style.display = 'block'; // с помощью такой конструкции говорим, что отображение картинки исходит из индекса
 
         if (slides.length < 10) {
             currentSlide.innerHTML = `0${slideIndex}`;
         } else {
             currentSlide.innerHTML = slideIndex;
         }
-    }
 
-    function plusSlides(n) {
-        showSlide(slideIndex += n);
-    }
+    });
 
     prev.addEventListener('click', () => {
-        plusSlides(-1);
+        if (offset == 0) {  
+            offset = +width.slice(0, width.length - 2) * (slides.length - 1); 
+        } else {
+            offset -= +width.slice(0, width.length - 2); 
+        }
+        
+        slidesInner.style.transform = `translateX(-${offset}px)`; 
+
+        if (slideIndex == 1) {
+            slideIndex = slides.length;
+        } else {
+            slideIndex--;
+        }
+
+        if (slides.length < 10) {
+            currentSlide.innerHTML = `0${slideIndex}`;
+        } else {
+            currentSlide.innerHTML = slideIndex;
+        }
     });
 
-    next.addEventListener('click', () => {
-        plusSlides(1);
-    });
 });
