@@ -53,4 +53,4 @@ function timer() {
     setTime(deadline, '.timer');
 }
 
-module.exports = timer;
+export default timer;
