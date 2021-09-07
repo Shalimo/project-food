@@ -1,3 +1,5 @@
+import {getData} from './services/services';
+
 function cards() {
     class MenuCard {
         constructor(src, alt, title, descr, price, parent, ...classes) {
@@ -41,12 +43,6 @@ function cards() {
             this.parent.append(element);
         }
     }
-
-    const getData = async (url) => {
-        const result = await fetch(url);
-
-        return await result.json();
-    };
 
     getData('http://localhost:3000/menu')
         .then(data => {

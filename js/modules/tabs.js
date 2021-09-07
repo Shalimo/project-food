@@ -1,8 +1,8 @@
-function tabs() {
+function tabs(tabsContentSelector, buttonsSelector, tabsParentSelector, activeClass) {
 
-    const tabContent = document.querySelectorAll('.tabcontent');
-    const buttonsContent = document.querySelectorAll('.tabheader__item');
-    const parentOfButtons = document.querySelector('.tabheader__items');
+    const tabContent = document.querySelectorAll(tabsContentSelector);
+    const buttonsContent = document.querySelectorAll(buttonsSelector);
+    const parentOfButtons = document.querySelector(tabsParentSelector);
 
     function hideContent() {
         tabContent.forEach(tabs => {
@@ -10,20 +10,20 @@ function tabs() {
         });
 
         buttonsContent.forEach(buttons => {
-            buttons.classList.remove('tabheader__item_active');
+            buttons.classList.remove(activeClass);
         });
     }
 
     function showContent(i = 0) {
         tabContent[i].style.display = 'block';
-        buttonsContent[i].classList.add('tabheader__item_active');
+        buttonsContent[i].classList.add(activeClass);
     }
 
     hideContent();
     showContent();
 
     parentOfButtons.addEventListener('click', (e) => {
-        if (e.target && e.target.classList.contains('tabheader__item')) {
+        if (e.target && e.target.classList.contains(buttonsSelector.slice(1))) { // удаляем точку от селектора
             buttonsContent.forEach((item, i) => {
                 if (e.target == item) {
                     hideContent();

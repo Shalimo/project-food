@@ -1,5 +1,5 @@
-function timer() {
-    const deadline = new Date('2021-09-31');
+function timer(id, deadline) {
+    
     
     function getTime(endtime) {
         const time = Date.parse(endtime) - Date.parse(new Date()); 
@@ -50,7 +50,7 @@ function timer() {
             }
     }
 
-    setTime(deadline, '.timer');
+    setTime(deadline, id);
 }
 
 export default timer;

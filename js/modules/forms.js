@@ -1,25 +1,20 @@
-function forms() {
+import {hideModal, showModal} from './modal';
+import {sendData} from './services/services';
+
+function forms(formSelector, modalTimerId, modalSelector) {
     const message = {
         loading: 'img/form/spinner.svg',
         success: 'Информация принята',
         failture: 'Что-то пошло не так...'
     };
 
-    const inputForms = document.querySelectorAll('form');
+    const inputForms = document.querySelectorAll(formSelector);
 
     inputForms.forEach(item => {
         bindData(item);
     });
 
-    const sendData = async (url, data) => {
-        const result = await fetch(url, {
-            method: 'POST',
-            headers: {'Content-type': 'application/json'},
-            body: data
-        });
-
-        return await result.json();
-    };
+    
 
     function bindData(form) {
 
@@ -54,7 +49,8 @@ function forms() {
     }
 
     function addThanksModal(message) {
-
+        
+        const modal = document.querySelector(modalSelector);
         const prevModal = document.querySelector('.modal__dialog');
         prevModal.classList.add('hide');
 
@@ -67,13 +63,13 @@ function forms() {
             </div>
         `;
         modal.append(newdModal);
-        showModal();
+        showModal('.modal', modalTimerId);
         
         setTimeout(() => {
             newdModal.remove();
             prevModal.classList.add('show');
             prevModal.classList.remove('hide');
-            hideModal();
+            hideModal('.modal');
         }, 3000);
     }
 }
